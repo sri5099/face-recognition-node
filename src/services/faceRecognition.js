@@ -1,29 +1,16 @@
 const faceapi = require('face-api.js');
-const canvas = require('canvas');
-const fs = require('fs');
-const config = require('../config/config');
-
-const { Canvas, Image, ImageData } = canvas;
-faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
+const tf = require('@tensorflow/tfjs');
+require('@tensorflow/tfjs-react-native');
 
 class FaceRecognitionService {
-  async loadModels() {
+  async loadModels(modelConfig) {
     try {
-      if (!fs.existsSync(config.models.directory)) {
-        throw new Error('Models directory not found');
-      }
-
-      const missingFiles = config.models.requiredFiles.filter(
-        file => !fs.existsSync(`${config.models.directory}/${file}`)
-      );
+      await tf.ready();
       
-      if (missingFiles.length > 0) {
-        throw new Error(`Missing model files: ${missingFiles.join(', ')}`);
-      }
-
-      await faceapi.nets.faceRecognitionNet.loadFromDisk(config.models.directory);
-      await faceapi.nets.faceLandmark68Net.loadFromDisk(config.models.directory);
-      await faceapi.nets.ssdMobilenetv1.loadFromDisk(config.models.directory);
+      // Load models from provided URIs
+      await faceapi.nets.faceRecognitionNet.loadFromUri(modelConfig.faceRecognitionNet);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(modelConfig.faceLandmark68Net);
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(modelConfig.ssdMobilenetv1);
       
       console.log('All models loaded successfully');
     } catch (error) {
@@ -32,16 +19,13 @@ class FaceRecognitionService {
     }
   }
 
-  async compareFaces(image1Buffer, image2Buffer) {
+  async compareFaces(image1Tensor, image2Tensor) {
     try {
-      const img1 = await canvas.loadImage(image1Buffer);
-      const img2 = await canvas.loadImage(image2Buffer);
-
-      const detection1 = await faceapi.detectSingleFace(img1)
+      const detection1 = await faceapi.detectSingleFace(image1Tensor)
         .withFaceLandmarks()
         .withFaceDescriptor();
       
-      const detection2 = await faceapi.detectSingleFace(img2)
+      const detection2 = await faceapi.detectSingleFace(image2Tensor)
         .withFaceLandmarks()
         .withFaceDescriptor();
 
@@ -58,10 +42,19 @@ class FaceRecognitionService {
       
       return {
         similarity,
-        isMatch: similarity > config.similarity.threshold
+        isMatch: similarity > 0.6
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  // Helper method to convert React Native image to tensor
+  async imageToTensor(imageElement) {
+    try {
+      return await tf.browser.fromPixels(imageElement);
+    } catch (error) {
+      throw new Error('Failed to convert image to tensor: ' + error.message);
     }
   }
 }

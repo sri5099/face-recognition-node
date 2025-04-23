@@ -1,128 +1,106 @@
-# Face Recognition API
+# Face Recognition for React Native
 
-A Node.js API for comparing faces using face-api.js and TensorFlow.js. This API provides face similarity comparison between two images.
-
-## Features
-
-- Face detection and recognition using face-api.js
-- Face similarity comparison with confidence score
-- Support for image upload and comparison
-- Built with Express.js and TensorFlow.js
-
-## Prerequisites
-
-- Node.js >= 16.0.0
-- Face recognition models (to be placed in `models/` directory)
-
-## Required Model Files
-
-The following model files must be placed in the `models/` directory:
-- face_recognition_model-weights_manifest.json
-- face_recognition_model-shard1
-- face_recognition_model-shard2
-- face_landmark_68_model-weights_manifest.json
-- face_landmark_68_model-shard1
-- ssd_mobilenetv1_model-weights_manifest.json
-- ssd_mobilenetv1_model-shard1
+A face comparison library using face-api.js and TensorFlow.js for React Native applications.
 
 ## Installation
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/sri5099/face-recognition-node.git
-cd face-recognition-node
-```
-
-2. Install dependencies:
-```bash
-npm install
+npm install face-recognition-rn
 # or
-yarn install
+yarn add face-recognition-rn
 ```
 
-3. Create required directories:
+Also install peer dependencies:
+
 ```bash
-mkdir -p uploads models
+npm install @tensorflow/tfjs @tensorflow/tfjs-react-native face-api.js
+# or
+yarn add @tensorflow/tfjs @tensorflow/tfjs-react-native face-api.js
 ```
 
-4. Download and place the model files in the `models/` directory
+## Setup
+
+1. Download the required model files and place them in your app's assets folder:
+   - face_recognition_model-weights_manifest.json
+   - face_recognition_model-shard1
+   - face_recognition_model-shard2
+   - face_landmark_68_model-weights_manifest.json
+   - face_landmark_68_model-shard1
+   - ssd_mobilenetv1_model-weights_manifest.json
+   - ssd_mobilenetv1_model-shard1
+
+2. Initialize TensorFlow.js in your app:
+
+```javascript
+import * as tf from '@tensorflow/tfjs';
+import { bundleResourceIO } from '@tensorflow/tfjs-react-native';
+
+// Initialize TF.js
+await tf.ready();
+```
 
 ## Usage
 
-1. Start the server:
-```bash
-npm start
-# or
-yarn start
+```javascript
+import { faceRecognitionService } from 'face-recognition-rn';
+import { Image } from 'react-native';
+
+// Example usage in a React Native component
+const MyComponent = () => {
+  const compareImages = async (image1Uri, image2Uri) => {
+    try {
+      // Initialize models with your model URIs
+      await faceRecognitionService.loadModels({
+        faceRecognitionNet: 'path/to/face_recognition_model',
+        faceLandmark68Net: 'path/to/face_landmark_68_model',
+        ssdMobilenetv1: 'path/to/ssd_mobilenetv1_model'
+      });
+
+      // Convert images to tensors
+      const image1Tensor = await faceRecognitionService.imageToTensor(image1Element);
+      const image2Tensor = await faceRecognitionService.imageToTensor(image2Element);
+
+      // Compare faces
+      const result = await faceRecognitionService.compareFaces(
+        image1Tensor,
+        image2Tensor
+      );
+
+      console.log('Match:', result.isMatch);
+      console.log('Similarity:', result.similarity);
+
+      // Clean up tensors
+      image1Tensor.dispose();
+      image2Tensor.dispose();
+    } catch (error) {
+      console.error('Error comparing faces:', error);
+    }
+  };
+
+  return (
+    // Your component JSX
+  );
+};
 ```
 
-For development with auto-reload:
-```bash
-npm run dev
-# or
-yarn dev
-```
+## API
 
-2. The server will start on port 3000 (or the port specified in the PORT environment variable)
+### faceRecognitionService.loadModels(modelConfig)
+Loads the required face-api.js models.
 
-## API Endpoints
+### faceRecognitionService.compareFaces(image1Tensor, image2Tensor)
+Compares two face images and returns similarity score.
 
-### Compare Faces
-- **URL**: `/compare`
-- **Method**: `POST`
-- **Content-Type**: `multipart/form-data`
-- **Request Body**:
-  - `image1`: First image file
-  - `image2`: Second image file
-- **Response**:
-```json
-{
-  "match": boolean,
-  "similarity": number,
-  "similarityPercentage": string
-}
-```
-
-## Example Usage
-
-Using cURL:
-```bash
-curl -X POST \
-  http://localhost:3000/compare \
-  -F "image1=@/path/to/first/image.jpg" \
-  -F "image2=@/path/to/second/image.jpg"
-```
-
-## Technical Details
-
-- Face detection and recognition powered by face-api.js
-- Uses TensorFlow.js Node backend for optimal performance
-- Image processing using node-canvas
-- File uploads handled by multer
-- Temporary files are automatically cleaned up after processing
-
-## Error Handling
-
-The API returns appropriate error messages for:
-- Missing or invalid images
-- No faces detected in images
-- Server processing errors
+### faceRecognitionService.imageToTensor(imageElement)
+Converts a React Native image element to a tensor.
 
 ## Limitations
 
-- Maximum file size: 10MB per image
-- Supports common image formats (JPEG, PNG)
-- Designed for comparing two faces at a time
-- Requires clear, front-facing facial images for best results
+- Images should contain clear, front-facing facial images
+- Only one face per image is supported
+- Performance may vary based on device capabilities
+- Requires proper model files to be available in the app assets
 
 ## License
 
 ISC
-
-## Dependencies
-
-- express: ^4.18.2
-- face-api.js: ^0.22.2
-- @tensorflow/tfjs-node: ^4.22.0
-- canvas: ^3.1.0
-- multer: ^1.4.5-lts.2
