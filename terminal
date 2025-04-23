@@ -1,0 +1,1 @@
+mkdir -p src/config src/middleware src/services src/utils
