@@ -1,5 +1,7 @@
-const faceRecognitionService = require('./services/faceRecognition');
+import FaceRecognitionService from './services/FaceRecognitionService';
+import { useFaceRecognition } from './hooks/useFaceRecognition';
 
-module.exports = {
-  faceRecognitionService
+export {
+  FaceRecognitionService,
+  useFaceRecognition
 };
