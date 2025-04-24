@@ -14,32 +14,27 @@
     "prepare": "yarn run clean && yarn run build"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^4.22.0",
-    "@tensorflow/tfjs-react-native": "^1.0.0",
-    "face-api.js": "^0.22.2",
-    "seedrandom": "^3.0.5"
+    "@tensorflow/tfjs": "4.22.0",
+    "@tensorflow/tfjs-core": "4.13.0",
+    "@tensorflow/tfjs-backend-cpu": "4.13.0",
+    "@tensorflow/tfjs-backend-webgl": "4.13.0",
+    "@tensorflow/tfjs-react-native": "1.0.0",
+    "face-api.js": "0.22.2",
+    "seedrandom": "3.0.5"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": ">=1.13.0",
-    "@tensorflow/tfjs-backend-cpu": "^4.13.0",
-    "@tensorflow/tfjs-backend-webgl": "^4.13.0",
-    "@tensorflow/tfjs-core": "^4.13.0",
-    "@tensorflow/tfjs": "^4.22.0",
-    "@tensorflow/tfjs-react-native": "^1.0.0",
     "react": ">=16.12.0",
     "react-native": "*",
     "react-native-fs": ">=2.20.0",
-    "react-native-camera": "*"
+    "react-native-camera": ">=4.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.0",
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.23.0",
-    "@react-native-async-storage/async-storage": "^1.21.0",
-    "@tensorflow/tfjs-backend-cpu": "^4.13.0",
-    "@tensorflow/tfjs-backend-webgl": "^4.13.0",
-    "@tensorflow/tfjs-core": "^4.13.0",
-    "react-native-fs": "^2.20.0",
-    "react-native-camera": "^4.2.1"
+    "@babel/cli": "7.22.10",
+    "@babel/core": "7.22.10",
+    "@babel/preset-env": "7.22.10",
+    "@react-native-async-storage/async-storage": "1.21.0",
+    "react-native-fs": "2.20.0",
+    "react-native-camera": "4.2.1"
   }
 }
