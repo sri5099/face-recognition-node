@@ -5,9 +5,9 @@ A face comparison library using face-api.js and TensorFlow.js for React Native a
 ## Installation
 
 ```bash
-npm install face-recognition-rn
+npm install face-recognition-node
 # or
-yarn add face-recognition-rn
+yarn add face-recognition-node
 ```
 
 Also install peer dependencies:
@@ -23,7 +23,7 @@ yarn add @tensorflow/tfjs @tensorflow/tfjs-react-native face-api.js
 ```javascript
 import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
-import { useFaceRecognition } from 'face-recognition-rn';
+import { useFaceRecognition } from 'face-recognition-node';
 
 const FaceComparisonExample = () => {
   const { initialize, compareFaces, isInitialized, isProcessing, error } = useFaceRecognition();
